@@ -12,8 +12,9 @@ refs.formControl.addEventListener('input', debounce(onSearch), 500);
 
 function onSearch (e) {
   e.preventDefault();
-   
-  const form = e.currenttarget;
+  renderCountries()  
+
+  const form = e.target;
   const searchQuery = form.query.value;
   
    
@@ -26,7 +27,6 @@ function onSearch (e) {
 function  renderCountries(name) {
     const markup = countryCard(name);
     refs.formControl.innerHTML = markup;
-    console.log(countryCard) 
 }
  
   //   const respons = API.fetchCountries(searchQuery)
