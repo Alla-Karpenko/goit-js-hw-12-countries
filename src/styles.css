@@ -13,10 +13,12 @@ body {
     Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   line-height: 1.5;
  
-  background-image: url('./images/intro.png');
+ 
+  background-color: palegoldenrod;
 }
 
 .form-control {
-  width: 200px;
+  width: 300px;
   height: 50px;
+
 }
