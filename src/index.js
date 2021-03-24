@@ -1,6 +1,6 @@
 import './styles.css';
-import './js/fetchCountries';
-import './js/notifications';
+
+import './js/fetch-api'
 
 
 

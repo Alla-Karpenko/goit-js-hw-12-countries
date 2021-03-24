@@ -1,55 +1,42 @@
-import API from './fetchCountries';
-import pnotify from './notifications';
 import debounce from 'lodash.debounce';
-import { render } from 'node-sass';
-import getRefs from './get-refs';
-import countryCard from '../templates/country-card.hbs';
-import fetchCountries from './fetchCountries';
-
-const refs = getRefs();
-
-refs.formControl.addEventListener('input', debounce(onSearch), 500);
-
-function onSearch (e) {
-  e.preventDefault();
-  renderCountries()  
-
-  const form = e.target;
-  const searchQuery = form.query.value;
-  
-   
-  fetchCountries(searchQuery)
-  .then(renderCountries)
-  .catch(error => console.log(error))
-  .finally(() => form.reset());
-}
-
-function  renderCountries(name) {
-    const markup = countryCard(name);
-    refs.formControl.innerHTML = markup;
-}
- 
-  //   const respons = API.fetchCountries(searchQuery)
-  //   .then(BASE_URL )
-  //   .catch(noti);
- 
+import axios from 'axios';
+import { error } from '@pnotify/core';
+import '@pnotify/core/dist/PNotify.css';
+import '@pnotify/core/dist/BrightTheme.css';
+import template from '../templates/countryTable.hbs';
 
 
-// function renderCountries (name) {
-//   const markup = 
-// }
+const input = document.querySelector( `.search` );
+const ul = document.querySelector( `.countries` );
 
+input.addEventListener( `input`, debounce( getCounties, 1000 ) );
 
-// fetch(`https://restcountries.eu/rest/v2/name`)
-// .then(response => {
-//     return response.json()  
-// })
-// .then(name => {
-//   console.log(name);
-//   const markup = countryCard(name);
-//   refs.formControl.innerHTML = markup;
-// })
+function getCounties (e) {
+    const searchQuery = e.target.value;
+    const baseUrl = `https://restcountries.eu/rest/v2/name/${searchQuery}`;
+    axios.get( baseUrl )
+        .then( response => {
+            const data = response.data;
+            ul.innerHTML = ``;
+            if( data.length === 1 ) {
+                const markup = data.reduce( ( acc, el ) => `${acc}` + `${template( el )}`, `` );
+                ul.insertAdjacentHTML( `beforeend`, markup );
+            } else if( data.length > 1 && data.length <= 10 ) {
+                const markup = data.reduce( ( acc, el ) => `${acc}` + `<li class="countries-list">${el.name}</li>`, `` );
+                ul.insertAdjacentHTML( `beforeend`, markup );
+            } else if( data.length > 10 ) {
+                error( {
+                  text: 'Too many matches found. Please enter a more specific query!',
+                  delay: 2000,
+                } );
+            }
+        } )
+        .catch( err => {
+            ul.innerHTML = ``;
 
-
-
-
+            error( {
+              text: 'Enter correct request',
+              delay: 2000,
+            });
+        } )
+};
